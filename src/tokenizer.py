@@ -1,5 +1,6 @@
 from tqdm import tqdm
 
+
 class BaseTokenizer:
     unk_token = '<unk>'
     pad_token = '<pad>'
@@ -17,7 +18,7 @@ class BaseTokenizer:
         self.eos_token_index = self.word2index[self.eos_token]
 
 
-    @staticmethod
+    @classmethod
     def tokenize(text) -> list[str]:
         """简单按空格切分，可按需改进"""
         return text.strip().split()
@@ -31,18 +32,15 @@ class BaseTokenizer:
         """构建词表并保存到文件"""
         vocab_set = set()
         for sentence in tqdm(sentences, desc="building vocab"):
-            vocab_set.update(cls().tokenize(sentence))  # 注意这里实例化以调用 tokenize
+            vocab_set.update(cls.tokenize(sentence))  # 注意这里实例化以调用 tokenize
 
         # 构建最终词表：特殊字符 + sorted vocab
         vocab_list = [cls.unk_token, cls.pad_token, cls.sos_token, cls.eos_token] + sorted(vocab_set)
 
         # 写入文件
         with open(vocab_path, "w", encoding="utf-8") as f:
-            for token in vocab_list:
-                f.write(token + "\n")
+            f.write("\n".join(vocab_list))
 
-        print(f"Vocab saved to {vocab_path}, total tokens: {len(vocab_list)}")
-        return vocab_list
 
     @classmethod
     def from_vocab(cls, vocab_path):
@@ -53,17 +51,24 @@ class BaseTokenizer:
 
 class ChineseTokenizer(BaseTokenizer):
     """中文分词器"""
-    @staticmethod
-    def tokenize(text) -> list[str]:
+    @classmethod
+    def tokenize(cls,text) -> list[str]:
         return list(text)
 
 
 class EnglishTokenizer(BaseTokenizer):
     """英文分词器"""
-    @staticmethod
-    def tokenize(text) -> list[str]:
-        return list(text)
+    tokenizer = TreebankWordTokenizer()
 
+    @classmethod
+    def tokenize(cls,text) -> list[str]:
+        return cls.tokenizer.tokenize(text)
+
+
+    def decode(self, indexes):
+
+
+        # return self.tokenizer.detokenize(text)
 
 
 
@@ -71,5 +76,9 @@ class EnglishTokenizer(BaseTokenizer):
 
 if __name__ == "__main__":
     # 测试
-    sentences = ["hello world", "hello AI", "tokenize this sentence"]
-    vocab = BaseTokenizer.build_vocab(sentences, "cmn.txt")
+   tokenizer = TreebankWordTokenizer()
+   word_list = tokenizer.tokenize("hello world")
+   print(word_list)
+
+
+

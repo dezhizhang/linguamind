@@ -2,6 +2,8 @@ import pandas as pd
 import config
 
 from sklearn.model_selection import train_test_split
+from tokenizer import EnglishTokenizer,ChineseTokenizer
+
 
 
 def process():
@@ -15,6 +17,13 @@ def process():
 
 
     # 3. 构建词表
+    ChineseTokenizer.build_vocab(train_df['zh'].tolist(),config.MODELS_DIR / 'zh_vocab.txt')
+    EnglishTokenizer.build_vocab(train_df['en'].tolist(),config.MODELS_DIR / 'en_vocab.txt')
+
+
+
+if __name__ == "__main__":
+    process()
 
     
 
