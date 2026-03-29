@@ -1,0 +1,13 @@
+<unk>
+<pad>
+<sos>
+<eos>
+a
+hello
+is
+nltk
+python
+test
+this
+useful
+world
